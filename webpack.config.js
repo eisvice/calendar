@@ -1,4 +1,6 @@
-const path = require('path')
+const path = require('path');
+const webpack = require('webpack');
+const plugin = require('tailwindcss');
 
 module.exports = {
     entry: './assets/scripts/index.js',
@@ -16,5 +18,9 @@ module.exports = {
                 ]
             }
         ]
-    }
-}
+    },
+    plugins: [
+        // load `moment/locale/ru.js`
+        new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /ru/),
+      ],
+};

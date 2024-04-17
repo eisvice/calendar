@@ -4,16 +4,49 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alpine</title>
     <script defer src="{% static 'bundle.js' %}"></script>
+    <link href="{% static 'output.css' %}" rel="stylesheet">
 </head>
 
 <body>
+    <script>
+        function appFooterComponent() {
+            return {
+                time: new Date(),
+                init() {
+                  setInterval(() => {
+                    this.time = new Date();
+                  }, 1000);
+                },
+                getTime() {
+                    return moment(this.time).format('DD MMMM, YYYY HH:mm:ss')
+                },
+            }
+        } 
+    
+    </script>
     <h1 id="page-title">Page Title</h1>
     <h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
+    <p class="text-3xl font-bold underline">
+        Hello world!
+    </p>
 
     <button hx-get="{% url 'index' %}" hx-trigger="click" hx-swap="outerHTML">Click</button>
+
+    <div>
+    
+    <div>
+        <div x-data="appFooterComponent()" x-init="init()">
+            <div>
+                ...
+                <span style="background-color: yellow" x-text="getTime()"></span>
+            </div>
+        </div>
+    </div>
+    
+
 </body>
 
 </html>
