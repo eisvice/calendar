@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Alpine</title>
+    <script defer src="{% static 'bundle.js' %}"></script>
+</head>
+
+<body>
+    <h1 id="page-title">Page Title</h1>
+    <h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
+
+    <button hx-get="{% url 'index' %}" hx-trigger="click" hx-swap="outerHTML">Click</button>
+</body>
+
+</html>
