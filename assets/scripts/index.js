@@ -9,8 +9,12 @@ Alpine.start()
 window.htmx = require('htmx.org');
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('I\'m working!');
-    document.getElementById('page-title').textContent += ' My bundle is still running ' + moment().format(); 
+    console.log(new Date().toISOString());
+    document.getElementById('page-title').textContent += ' My bundle is still running ' + moment().format();
+    var update = function() {
+        document.getElementById('datetime').innerHTML = moment().format('MMMM Do YYYY, h:mm:ss a');
+    };
+    setInterval(update, 1000);
 });
 
 

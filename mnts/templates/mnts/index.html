@@ -8,44 +8,97 @@
     <title>Alpine</title>
     <script defer src="{% static 'bundle.js' %}"></script>
     <link href="{% static 'output.css' %}" rel="stylesheet">
+    <script type='importmap'>
+        {
+          "imports": {
+            "@fullcalendar/core": "https://cdn.skypack.dev/@fullcalendar/core@6.1.11",
+            "@fullcalendar/daygrid": "https://cdn.skypack.dev/@fullcalendar/daygrid@6.1.11",
+            "@fullcalendar/timegrid": "https://cdn.skypack.dev/@fullcalendar/timegrid@6.1.11",
+            "@fullcalendar/list": "https://cdn.skypack.dev/@fullcalendar/list@6.1.11",
+            "alpinejs": "../../node_modules/alpinejs"
+          }
+        }
+    </script>
+    <script type="module">
+        import { Calendar } from '@fullcalendar/core'
+        import dayGridPlugin from '@fullcalendar/daygrid'
+        import timeGridPlugin from '@fullcalendar/timegrid'
+        import listPlugin from '@fullcalendar/list'
+
+        document.addEventListener('DOMContentLoaded', function() {
+          var calendarEl = document.getElementById('calendar');
+          var calendar = new Calendar(calendarEl, {
+            nowIndicator: true,
+            firstDay: 1,
+            views: {
+                timeGridWeek: {
+                    dayHeaderFormat: { weekday: 'short', day: 'numeric', month: 'numeric'}
+                }
+            },
+            slotMinTime: '08:00:00',
+            contentHeight:"auto",
+            plugins: [dayGridPlugin,timeGridPlugin,listPlugin],
+            initialView: 'timeGridWeek',
+            headerToolbar: {
+              left: 'prev,today,next',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+            events: '{%url 'dates'%}'
+          });
+          calendar.render();
+        });
+  
+      </script>
 </head>
 
 <body>
-    <script>
-        function appFooterComponent() {
-            return {
-                time: new Date(),
-                init() {
-                  setInterval(() => {
-                    this.time = new Date();
-                  }, 1000);
-                },
-                getTime() {
-                    return moment(this.time).format('DD MMMM, YYYY HH:mm:ss')
-                },
-            }
-        } 
-    
-    </script>
+
     <h1 id="page-title">Page Title</h1>
     <h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
-    <p class="text-3xl font-bold underline">
-        Hello world!
+    <p >
+        <span class="box-decoration-clone bg-gradient-to-r from-indigo-600 to-pink-500 text-white px-2">
+            Hello <br />
+            world!
+        </span>
     </p>
 
-    <button hx-get="{% url 'index' %}" hx-trigger="click" hx-swap="outerHTML">Click</button>
-
-    <div>
-    
-    <div>
-        <div x-data="appFooterComponent()" x-init="init()">
-            <div>
-                ...
-                <span style="background-color: yellow" x-text="getTime()"></span>
-            </div>
-        </div>
+    <button type="button" class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2" hx-get="{% url 'index' %}" hx-trigger="click" hx-swap="outerHTML">Click</button>
+    <div id="datetime" x-data="{ timeNow: new Date() }" x-text="timeNow"></div>
+    <div x-data="{ count: 0 }">
+        <button class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2" x-on:click="count++">Increment</button>
+        <span x-text="count"></span>
     </div>
-    
+    <div>
+        <div class="p-4" id='calendar'></div>
+    </div>
+    {% comment %} <div class="container px-4 bg-slate-50  rounded-xl overflow-hidden mt-4">
+        <div class="shadow-sm overflow-hidden my-8">
+            <table class="border-collapse table-fixed w-full text-sm">
+                <thead>
+                    <tr>
+                        <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left"></th>
+                        {% for weekday in weekdays %}
+                            <th class="border-b dark:border-slate-600 font-medium p-4 pl-8 pt-0 pb-3 text-slate-400 dark:text-slate-200 text-left">{{ weekday }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    </tr>
+                    {% for hour in hours %}
+                        <tr>
+                            <td class="border-b border-slate-100 dark:border-slate-700 p-4 text-slate-500 dark:text-slate-400 bg-white">{{hour}}</td>
+                            {% for _ in weekdays %}
+                                <td class="border-b border-slate-100 hover:border-slate-700 p-4 text-slate-500 hover:text-slate-400 bg-white"></td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </table>
+        </div>
+    </div> {% endcomment %}
 
 </body>
 
