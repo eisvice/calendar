@@ -2,6 +2,7 @@ import calendar
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import Theme, Event
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 def index(request):
@@ -27,5 +28,9 @@ def get_dates(request):
                 'textColor':date.theme.text_color
             }
         )
-
     return JsonResponse(context, safe=False)
+
+@require_POST
+def add_event(request):
+    print(request.POST)
+    return HttpResponse("sent")
