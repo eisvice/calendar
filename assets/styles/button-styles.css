@@ -1,5 +1,10 @@
-button {
-    background: blue;
-    padding: 8px;
-    color: white;
-}
+.circle {
+    height: 15px;
+    width: 15px;
+    border: 1px solid black;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    top: -2px;
+  }

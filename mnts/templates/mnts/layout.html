@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Alpine{% endblock %}</title>
+    <script defer src="{% static 'bundle.js' %}"></script>
+    <link href="{% static 'output.css' %}" rel="stylesheet">
+    <script type='importmap'>
+        {
+          "imports": {
+            "@fullcalendar/core": "https://cdn.skypack.dev/@fullcalendar/core@6.1.11",
+            "@fullcalendar/daygrid": "https://cdn.skypack.dev/@fullcalendar/daygrid@6.1.11",
+            "@fullcalendar/timegrid": "https://cdn.skypack.dev/@fullcalendar/timegrid@6.1.11",
+            "@fullcalendar/list": "https://cdn.skypack.dev/@fullcalendar/list@6.1.11",
+            "alpinejs": "../../node_modules/alpinejs"
+          }
+        }
+    </script>
+    <script type="module">
+        import { Calendar } from '@fullcalendar/core'
+        import dayGridPlugin from '@fullcalendar/daygrid'
+        import timeGridPlugin from '@fullcalendar/timegrid'
+        import listPlugin from '@fullcalendar/list'
+
+        document.addEventListener('DOMContentLoaded', function() {
+          var calendarEl = document.getElementById('calendar');
+          var calendar = new Calendar(calendarEl, {
+            nowIndicator: true,
+            firstDay: 1,
+            views: {
+                timeGridWeek: {
+                    dayHeaderFormat: { weekday: 'short', day: 'numeric', month: 'numeric'}
+                }
+            },
+            slotMinTime: '08:00:00',
+            contentHeight:"auto",
+            plugins: [dayGridPlugin,timeGridPlugin,listPlugin],
+            initialView: 'timeGridWeek',
+            headerToolbar: {
+              left: 'prev,today,next',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
+            events: '{%url "dates"%}'
+          });
+          calendar.render();
+        });
+  
+      </script>
+      <script>
+        // Timezone settings
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; // e.g. "America/New_York"
+        document.cookie = "django_timezone=" + timezone;
+      </script>
+</head>
+
+<body>
+
+  <div id="content">
+    {% block content %}{% endblock %}
+  </div>
+
+</body>
+
+</html>

@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Theme(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, unique=True)
     color = models.CharField(max_length=20)
     text_color = models.CharField(max_length=20)
 

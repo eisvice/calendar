@@ -1,0 +1,70 @@
+{% load widget_tweaks %}
+
+<div x-data="{startDay: '', arrays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']}" x-show="currentTab == 'Event'" id="event-tab" class="flex justify-center">
+    <form hx-post="{% url 'add_event' %}" hx-swap="outerHTML" hx-select-oob="#calendar" id="new-event-form" class="w-full max-w-md">
+        {% csrf_token %}
+        {% if themes.count == 0 %}
+        <div class="flex items-center p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
+            <svg class="flex-shrink-0 inline w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+            </svg>
+            <span class="sr-only">Info</span>
+            <div>Please create a theme first</div>
+        </div>
+        {% endif %}
+        {% for field in event_form %}
+        <div class="md:flex md:items-center mb-6">
+            <div class="md:w-1/3">
+                <label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="{{ field.id_for_label}}">
+                    {{ field.label_tag }}
+                </label>
+            </div>
+            <div class="md:w-2/3">
+                {% render_field field class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" placeholder=field.label%}
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- <div class="md:flex md:items-center mb-6">
+            <div class="md:w-1/3">
+                <label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="start-time">
+                    Start Time
+                </label>
+            </div>
+            <div class="md:w-2/3">
+                <input @change="startDay=new Date($el.value).getDay(), console.log(startDay)" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="start-time" name="start-time" type="datetime-local">
+            </div>
+        </div> -->
+
+        <div x-data="{weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], days: []}">
+            <div class="md:flex md:items-end md:justify-end mb-6">
+                <template x-for="weekday in weekdays">
+                    <div class="flex items-end ms-4">
+                        <label x-text="weekday.slice(0,3)" :for="`checkbox-${weekday.toLowerCase()}`"  class="me-1 text-sm text-gray-500 font-bold dark:text-gray-300"></label>
+                        <input :id="`checkbox-${weekday.toLowerCase()}`" type="checkbox" :value="weekday" x-model="days" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600">
+                    </div>
+                </template>
+            </div>
+            <p x-text="days"></p>
+            <template x-for="day in days.sort((a, b) => weekdays.indexOf(a) - weekdays.indexOf(b));">
+                <div class="md:flex md:items-center mb-6">
+                    <div class="md:w-1/3">
+                        <label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" x-text="day" :for="`time-${weekdays.indexOf(day)}`"></label>
+                    </div>
+                    <div class="md:w-2/3">
+                        <input class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" :id="`time-${weekdays.indexOf(day)}`" :name="`time-${weekdays.indexOf(day)}`" type="time" required>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div class="md:flex md:items-center">
+            <div class="md:w-1/3"></div>
+            <div class="md:w-2/3">
+                <button class="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold w-4/12 py-2 px-2 rounded" type="submit">
+                    Add Event
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
