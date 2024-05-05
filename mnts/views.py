@@ -19,6 +19,7 @@ def json_dates():
     for date in dates:
         context.append(
             {
+                'id': date.id,
                 'title':date.title,
                 'description':date.description,
                 'start':date.start.isoformat(),

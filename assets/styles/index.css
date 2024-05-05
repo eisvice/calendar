@@ -4,3 +4,7 @@
 @tailwind utilities;
 
 @import url(button-styles.css);
+
+.fc-timegrid-event-harness {
+    cursor: pointer;
+}
