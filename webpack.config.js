@@ -3,9 +3,12 @@ const webpack = require('webpack');
 const plugin = require('tailwindcss');
 
 module.exports = {
-    entry: './assets/scripts/index.js',
+    entry: {
+        bundle: './assets/scripts/index.js',
+        moment_bundle: './assets/scripts/moment_input.js'
+    },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'mnts', 'static')
     },
     module: {

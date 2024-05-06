@@ -1,7 +1,8 @@
 import Alpine from 'alpinejs'
 import '../styles/index.css'
+import { off } from 'htmx.org';
 var moment = require('moment');
- 
+
 window.Alpine = Alpine
 
 Alpine.start()
@@ -17,5 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(update, 1000);
 });
 
+var sidebarOffcanvas = document.getElementById('offcanvasSidebar');
+sidebarOffcanvas.addEventListener('hidden.bs.offcanvas', function() {
+    const canvasHeader = document.getElementById('offcanvasSidebarLabel');
+    const canvasBody = document.getElementById('offcanvasBody');
+
+    canvasHeader.innerHTML = '';
+    canvasBody.innerHTML = '';
+})
 
 
