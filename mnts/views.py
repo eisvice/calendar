@@ -35,14 +35,11 @@ def json_dates():
 
 # Create your views here.
 def index(request):
-    weekdays = calendar.weekheader(10).split()
     theme_form = ThemeForm()
     event_form = EventForm()
     # TODO: add edit and delete buttons to themes tab
     themes = Theme.objects.all()
     context = {
-        "weekdays": weekdays,
-        "hours": range(24),
         "theme_form": theme_form,
         "event_form": event_form,
         "themes": themes,
@@ -51,19 +48,15 @@ def index(request):
 
 
 def get_dates(request):
-    print(request.GET)
     context = json_dates()
     return JsonResponse(context, safe=False)
 
 
 @require_POST
 def add_event(request):
-    print(request.POST)
     event_form = EventForm(request.POST)
     weekdays = {}
     if event_form.is_valid():
-        print("valid event form")
-        print(event_form.cleaned_data)
         data = event_form.cleaned_data
         current_tz = timezone.get_current_timezone()
         theme = data["theme"]
@@ -75,9 +68,7 @@ def add_event(request):
         repeats = int(data["repeats"])
         for key in request.POST:
             if re.search(r"time-\w+", key):
-                print("FOUND", key, request.POST.get(key))
                 weekdays |= {int(key.replace("time-", "")): request.POST.get(key)}
-        print(weekdays)
         weekday_index = 0
         # TODO: add a constraint on the number of repetition in case when no weekdays were selcted!
         current_day = start
@@ -96,8 +87,6 @@ def add_event(request):
                     end=start_time+datetime.timedelta(minutes=duration),
                 )
                 new_event.save()
-                print(new_event)
-                print("current", current_tz)
                 weekday_index += 1
             current_day += datetime.timedelta(days=1)
         # get_dates(request)
@@ -107,9 +96,7 @@ def add_event(request):
 
 @require_POST
 def edit_event(request):
-    current_tz = timezone.get_current_timezone()
     data = request.POST
-    print(data)
     id = int(data.get("event-id"))
     new_date = datetime.datetime.fromisoformat(data.get("new-start-time"))
     new_duration_datetime = datetime.time.fromisoformat(data.get("new-duration"))
@@ -123,7 +110,6 @@ def edit_event(request):
 
 @require_POST
 def add_theme(request):
-    print(request.POST)
     theme_form = ThemeForm(request.POST)
     if theme_form.is_valid():
         try:
@@ -134,8 +120,15 @@ def add_theme(request):
             theme = Theme.objects.create(name=name, color=color, text_color=text_color)
             theme.save()
             themes = Theme.objects.all()
-            themes = render_to_string("mnts/theme-oob.html", {"themes": themes})
-            new_theme = render_to_string("mnts/new-theme.html", {"theme_form": ThemeForm()}, request=request)
-            return HttpResponse(themes + new_theme)
+            # themes = render_to_string("mnts/theme-oob.html", {"themes": themes})
+            # new_theme = render_to_string("mnts/new-theme.html", {"theme_form": ThemeForm()}, request=request)
+            # new_event = render_to_string("mnts/new-event.html", {"event_form": EventForm()}, request=request)
+            context = {
+                "themes": themes,
+                "theme_form": ThemeForm(),
+                "event_form": EventForm(),
+            }
+            # return HttpResponse(themes + new_theme + new_event)
+            return render(request, "mnts/settings-content.html", context)
         except IntegrityError:
             return render(request, "mnts/new-theme.html", {"theme_form": theme_form, "errors": "Create a unique theme"})

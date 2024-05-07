@@ -5,9 +5,9 @@ var moment = require('moment');
 
 window.Alpine = Alpine
 
+window.htmx = require('htmx.org');
 Alpine.start()
 
-window.htmx = require('htmx.org');
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log(new Date().toISOString());

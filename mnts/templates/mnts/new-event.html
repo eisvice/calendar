@@ -1,7 +1,7 @@
 {% load widget_tweaks %}
 
 <div x-data="{startDay: '', arrays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']}" x-show="currentTab == 'Event'" id="event-tab" class="flex justify-center">
-    <form hx-post="{% url 'add_event' %}" hx-swap="outerHTML" hx-select-oob="#calendar" id="new-event-form" class="w-full max-w-md">
+    <form hx-post="{% url 'add_event' %}" hx-swap="outerHTML" id="new-event-form" class="w-full max-w-md">
         {% csrf_token %}
         {% if themes.count == 0 %}
         <div class="flex items-center p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">

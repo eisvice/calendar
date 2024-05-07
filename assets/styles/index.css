@@ -5,6 +5,6 @@
 
 @import url(button-styles.css);
 
-.fc-timegrid-event-harness {
+.fc-timegrid-event-harness, .fc-list-event, .fc-daygrid-event-harness {
     cursor: pointer;
 }

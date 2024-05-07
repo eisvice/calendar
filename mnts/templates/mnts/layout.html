@@ -28,6 +28,16 @@
         import listPlugin from '@fullcalendar/list'
 
         document.addEventListener('DOMContentLoaded', function() {
+          callCalendar();
+        });
+
+        htmx.on('htmx:afterSwap', (e) => {
+          if (e.detail.elt.id === 'event-tab') {
+            callCalendar();
+          }
+        });
+
+        function callCalendar() {
           var calendarEl = document.getElementById('calendar');
           var calendar = new Calendar(calendarEl, {
             nowIndicator: true,
@@ -86,8 +96,8 @@
             }
           });
           calendar.render();
-        });
-  
+        }
+
       </script>
 
       <script>
