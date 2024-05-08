@@ -89,8 +89,6 @@ def add_event(request):
                 new_event.save()
                 weekday_index += 1
             current_day += datetime.timedelta(days=1)
-        # get_dates(request)
-        # TODO: change the return page
         return render(request, "mnts/new-event.html", {"event_form": EventForm()})
 
 
@@ -120,15 +118,11 @@ def add_theme(request):
             theme = Theme.objects.create(name=name, color=color, text_color=text_color)
             theme.save()
             themes = Theme.objects.all()
-            # themes = render_to_string("mnts/theme-oob.html", {"themes": themes})
-            # new_theme = render_to_string("mnts/new-theme.html", {"theme_form": ThemeForm()}, request=request)
-            # new_event = render_to_string("mnts/new-event.html", {"event_form": EventForm()}, request=request)
             context = {
                 "themes": themes,
                 "theme_form": ThemeForm(),
                 "event_form": EventForm(),
             }
-            # return HttpResponse(themes + new_theme + new_event)
             return render(request, "mnts/settings-content.html", context)
         except IntegrityError:
             return render(request, "mnts/new-theme.html", {"theme_form": theme_form, "errors": "Create a unique theme"})
