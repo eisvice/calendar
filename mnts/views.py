@@ -39,10 +39,12 @@ def index(request):
     event_form = EventForm()
     # TODO: add edit and delete buttons to themes tab
     themes = Theme.objects.all()
+    theme_forms = [ThemeForm(instance=theme) for theme in themes]
+    themes_and_forms = zip(themes, theme_forms)
     context = {
         "theme_form": theme_form,
         "event_form": event_form,
-        "themes": themes,
+        "themes_and_forms": themes_and_forms,
     }
     return render(request, "mnts/index.html", context)
 
@@ -126,3 +128,12 @@ def add_theme(request):
             return render(request, "mnts/settings-content.html", context)
         except IntegrityError:
             return render(request, "mnts/new-theme.html", {"theme_form": theme_form, "errors": "Create a unique theme"})
+        
+def edit_theme(request, id):
+    theme = Theme.objects.get(pk=id)
+    if request.method == "DELETE":
+        theme.delete()
+        return HttpResponse("theme was deleted")
+    elif request.method == "PATCH":
+        print(request)
+        return render(request, "mnts/theme-row.html", {"theme_form": ThemeForm(instance=theme), "theme": theme})

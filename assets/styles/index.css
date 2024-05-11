@@ -8,3 +8,8 @@
 .fc-timegrid-event-harness, .fc-list-event, .fc-daygrid-event-harness {
     cursor: pointer;
 }
+
+tr.htmx-swapping td, tr.htmx-swapping th {
+    opacity: 0;
+    transition: opacity 400ms ease-out;
+  }

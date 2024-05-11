@@ -16,10 +16,22 @@ class CustomTimeWidget(forms.TimeInput):
     input_type = 'time'
 
 
-class ThemeForm(forms.Form):
+class ThemeForm(forms.ModelForm):
     name = forms.CharField(label="Theme", max_length=30)
     color = forms.CharField(label="Background Color", max_length=10)
     text_color = forms.CharField(label="Text Color", max_length=10)
+
+    class Meta:
+        model = Theme
+        fields = ("name", "color", "text_color",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        if instance:
+            self.fields['name'].widget.attrs.update({'id': f'edit-name-{instance.id}'})
+            self.fields['color'].widget.attrs.update({'id': f'edit-color-{instance.id}'})
+            self.fields['text_color'].widget.attrs.update({'id': f'edit-text-color-{instance.id}'})
 
 
 class EventForm(forms.Form):

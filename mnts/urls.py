@@ -8,4 +8,5 @@ urlpatterns = [
     path("add-event", views.add_event, name="add_event"),
     path("edit-event", views.edit_event, name="edit_event"),
     path("add-theme", views.add_theme, name="add_theme"),
+    path("theme/<int:id>", views.edit_theme, name="theme")
 ]

@@ -12,33 +12,30 @@
                     <th scope="col" class="px-6 py-3">
                         Text Color
                     </th>
+                    <th scope="col" class="px-3 py-3">
+                        Edit
+                    </th>
+                    <th scope="col" class="px-3 py-3">
+                        Delete
+                    </th>
+
                 </tr>
             </thead>
             <tbody>
-                {% for theme in themes %}
+                {% for theme, form in themes_and_forms %}
+                    {% include 'mnts/theme-row.html' %}
+                {% empty %}
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                         <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            {{theme.name}}
+                            ------
                         </th>
                         <td class="px-6 py-4">
-                            {{theme.color}} <div class="circle" style="background-color: {{theme.color}};"></div>
+                            ------
                         </td>
                         <td class="px-6 py-4">
-                            {{theme.text_color}} <div class="circle" style="background-color: {{theme.text_color}};"></div>
+                            ------
                         </td>
                     </tr>
-                {% empty %}
-                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        ------
-                    </th>
-                    <td class="px-6 py-4">
-                        ------
-                    </td>
-                    <td class="px-6 py-4">
-                        ------
-                    </td>
-                </tr>
                 {% endfor %}
             </tbody>
         </table>
