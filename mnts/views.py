@@ -7,6 +7,7 @@ from .models import Theme, Event
 from django.utils import timezone
 from django.shortcuts import render
 from .forms import ThemeForm, EventForm
+from django.http.request import QueryDict
 from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
@@ -37,7 +38,6 @@ def json_dates():
 def index(request):
     theme_form = ThemeForm()
     event_form = EventForm()
-    # TODO: add edit and delete buttons to themes tab
     themes = Theme.objects.all()
     theme_forms = [ThemeForm(instance=theme) for theme in themes]
     themes_and_forms = zip(themes, theme_forms)
@@ -106,7 +106,8 @@ def edit_event(request):
     event.duration = new_duration_datetime
     event.end = timezone.make_aware(new_date + datetime.timedelta(minutes=new_duration))
     event.save(update_fields=["start", "duration", "end"])
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponse()
+
 
 @require_POST
 def add_theme(request):
@@ -120,20 +121,27 @@ def add_theme(request):
             theme = Theme.objects.create(name=name, color=color, text_color=text_color)
             theme.save()
             themes = Theme.objects.all()
+            theme_forms = [ThemeForm(instance=theme) for theme in themes]
+            themes_and_forms = zip(themes, theme_forms)
             context = {
-                "themes": themes,
                 "theme_form": ThemeForm(),
                 "event_form": EventForm(),
+                "themes_and_forms": themes_and_forms,
             }
             return render(request, "mnts/settings-content.html", context)
         except IntegrityError:
             return render(request, "mnts/new-theme.html", {"theme_form": theme_form, "errors": "Create a unique theme"})
         
+
 def edit_theme(request, id):
     theme = Theme.objects.get(pk=id)
     if request.method == "DELETE":
         theme.delete()
         return HttpResponse("theme was deleted")
     elif request.method == "PATCH":
-        print(request)
-        return render(request, "mnts/theme-row.html", {"theme_form": ThemeForm(instance=theme), "theme": theme})
+        data = QueryDict(request.body)
+        print(data)
+        theme_form = ThemeForm(data, instance=theme)
+        if theme_form.is_valid():
+            theme_form.save()
+            return render(request, "mnts/theme-row.html", {"form": ThemeForm(instance=theme), "theme": theme})

@@ -18,8 +18,8 @@ class CustomTimeWidget(forms.TimeInput):
 
 class ThemeForm(forms.ModelForm):
     name = forms.CharField(label="Theme", max_length=30)
-    color = forms.CharField(label="Background Color", max_length=10)
-    text_color = forms.CharField(label="Text Color", max_length=10)
+    color = forms.CharField(label="Background Color", max_length=7)
+    text_color = forms.CharField(label="Text Color", max_length=7)
 
     class Meta:
         model = Theme
