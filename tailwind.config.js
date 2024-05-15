@@ -1,9 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./mnts/templates/mnts/*.html", "./mnts/static/*.html"],
+  content: ["./mnts/templates/mnts/*.html", "./mnts/static/*.html", "./mnts/templates/registration/*.html"],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }
 

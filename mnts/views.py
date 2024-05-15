@@ -1,40 +1,47 @@
 import re
-import calendar
 import datetime
-from decimal import Decimal
-from django.urls import reverse
-from .models import Theme, Event
+from dateutil.parser import parse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from .models import User, Theme, EventGroup, Event
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
+from django.contrib.auth.views import PasswordChangeView, PasswordResetView
+from django.urls import reverse_lazy, reverse
+from django.views import generic
 from django.utils import timezone
 from django.shortcuts import render
-from .forms import ThemeForm, EventForm
+from .forms import ThemeForm, EventForm, SignUpForm
 from django.http.request import QueryDict
 from django.db.utils import IntegrityError
-from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
 
 
-# Get JSON dates
-def json_dates():
-    context = []
-    dates = Event.objects.all()
-    for date in dates:
-        context.append(
-            {
-                'id': date.id,
-                'title':date.title,
-                'description':date.description,
-                'start':date.start.isoformat(),
-                'hours':f"{date.duration}",
-                'end':date.end.isoformat(),
-                'color':date.theme.color,
-                'textColor':date.theme.text_color
-            }
-        )
-    return context
+class UserRegisterView(generic.CreateView):
+    form_class = SignUpForm
+    template_name = "registration/register.html"
+    success_url = reverse_lazy("login")
+
+
+class ChangePasswordView(PasswordChangeView):
+    form_class = PasswordChangeForm
+    template_name = "registration/change-password.html"
+    success_url = reverse_lazy("login")
+
+
+class ResetPasswordView(PasswordResetView):
+    form_class = PasswordResetForm
+    template_name = "registration/reset-password.html"
+    success_url = reverse_lazy("login")
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse("login"))
 
 
 # Create your views here.
+@login_required
 def index(request):
     theme_form = ThemeForm()
     event_form = EventForm()
@@ -50,7 +57,28 @@ def index(request):
 
 
 def get_dates(request):
-    context = json_dates()
+    print(request.GET)
+    start_str = request.GET.get("start")
+    end_str = request.GET.get("end")
+    start = parse(start_str)
+    end = parse(end_str)
+    print(start, end, type(start), type(end))
+    # print(timezone.is_aware(start), timezone.is_aware())
+    context = []
+    dates = Event.objects.filter(start__range=(start, end))
+    for date in dates:
+        context.append(
+            {
+                'id': date.id,
+                'title':date.title,
+                'description':date.description,
+                'start':date.start.isoformat(),
+                'hours':f"{date.duration}",
+                'end':date.end.isoformat(),
+                'color':date.theme.color,
+                'textColor':date.theme.text_color
+            }
+        )
     return JsonResponse(context, safe=False)
 
 
@@ -71,8 +99,9 @@ def add_event(request):
         for key in request.POST:
             if re.search(r"time-\w+", key):
                 weekdays |= {int(key.replace("time-", "")): request.POST.get(key)}
+        if repeats > 1 and len(weekdays) == 0:
+            return render(request, "mnts/new-event.html", {"event_form": event_form, "error": "Check some of the weekdays to assign more than 1 day"}, status=422)
         weekday_index = 0
-        # TODO: add a constraint on the number of repetition in case when no weekdays were selcted!
         current_day = start
         while weekday_index < repeats:
             if current_day == start or current_day.weekday() in weekdays:
