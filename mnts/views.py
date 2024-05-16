@@ -7,7 +7,7 @@ from .models import User, Theme, EventGroup, Event
 from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView
 from django.urls import reverse_lazy, reverse
-from django.views import generic
+from django.views.generic import CreateView
 from django.utils import timezone
 from django.shortcuts import render
 from .forms import ThemeForm, EventForm, SignUpForm
@@ -17,7 +17,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
 
 
-class UserRegisterView(generic.CreateView):
+class UserRegisterView(CreateView):
     form_class = SignUpForm
     template_name = "registration/register.html"
     success_url = reverse_lazy("login")
@@ -32,12 +32,7 @@ class ChangePasswordView(PasswordChangeView):
 class ResetPasswordView(PasswordResetView):
     form_class = PasswordResetForm
     template_name = "registration/reset-password.html"
-    success_url = reverse_lazy("login")
-
-
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect(reverse("login"))
+    success_url = reverse_lazy("password_reset_done")
 
 
 # Create your views here.

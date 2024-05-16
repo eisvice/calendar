@@ -1,7 +1,5 @@
 from django import forms
-from .models import Theme
-from django.utils import timezone
-from django.contrib.auth.models import User
+from .models import Theme, User
 from django.contrib.auth.forms import UserCreationForm
 
 class SignUpForm(UserCreationForm):

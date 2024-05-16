@@ -1,10 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 import datetime
 
 
 # Create your models here.
-class User(AbstractBaseUser):
+class User(AbstractUser):
     pass
 
 
