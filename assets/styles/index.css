@@ -21,3 +21,7 @@ tr.htmx-swapping td, tr.htmx-swapping th {
     opacity: 0;
     transition: opacity 400ms ease-out;
   }
+
+[x-cloak] {
+    display: none !important;
+  }

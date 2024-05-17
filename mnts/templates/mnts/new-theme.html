@@ -1,6 +1,6 @@
 {% load widget_tweaks %}
 
-<div x-show="currentTab == 'New Theme'" id="theme-tab" class="flex justify-center" style="display: none;">
+<div x-show="currentTab == 'New Theme'" id="theme-tab" class="flex justify-center">
     <form hx-post="{% url 'add_theme' %}" hx-target="#calendar-settings" id="new-theme-form" class="w-full max-w-md">
         {% csrf_token %}
         {% if errors %}

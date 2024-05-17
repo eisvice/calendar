@@ -1,9 +1,12 @@
 import Alpine from 'alpinejs'
+import morph from '@alpinejs/morph'
 import '../styles/index.css'
 import './htmx_file.js'
+import './htmx-alpine-morph.js'
 var moment = require('moment');
 
 window.Alpine = Alpine
+Alpine.plugin(morph)
 
 
 Alpine.start()

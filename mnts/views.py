@@ -35,7 +35,6 @@ class ResetPasswordView(PasswordResetView):
     success_url = reverse_lazy("password_reset_done")
 
 
-# Create your views here.
 @login_required
 def index(request):
     theme_form = ThemeForm()
@@ -43,13 +42,14 @@ def index(request):
     themes = Theme.objects.filter(user=request.user)
     theme_forms = [ThemeForm(instance=theme) for theme in themes]
     themes_and_forms = zip(themes, theme_forms)
-    event_groups = EventGroup.objects.filter(theme__id__in=themes)
+    event_groups = EventGroup.objects.filter(theme__id__in=themes).order_by("id")
     context = {
         "event_form": event_form,
         "event_groups": event_groups,
         "themes_and_forms": themes_and_forms,
         "theme_form": theme_form,
         "themes_count": themes.count(),
+        "currentTab": "Themes",
     }
     return render(request, "mnts/index.html", context)
 
@@ -142,7 +142,15 @@ def add_event(request):
 
             current_day += datetime.timedelta(days=1)
 
-        return render(request, "mnts/new-event.html", {"event_form": EventForm()})
+        themes = Theme.objects.filter(user=request.user)
+        event_groups = EventGroup.objects.filter(theme__id__in=themes).order_by("id")
+        context = {
+            "event_form": EventForm(),
+            "theme_form": ThemeForm(),
+            "event_groups": event_groups,
+            "currentTab": "Event",
+        }
+        return render(request, "mnts/settings-content.html", context)
     else:
         return render(request, "mnts/new-event.html", {"event_form": event_form})
 
@@ -190,10 +198,12 @@ def add_theme(request):
     themes = Theme.objects.filter(user=request.user)
     theme_forms = [ThemeForm(instance=theme) for theme in themes]
     themes_and_forms = zip(themes, theme_forms)
+    event_groups = EventGroup.objects.filter(theme__id__in=themes)
     context = {
         "theme_form": ThemeForm(),
         "event_form": EventForm(),
         "themes_and_forms": themes_and_forms,
+        "event_groups": event_groups,
     }
     return render(request, "mnts/settings-content.html", context)
         

@@ -29,28 +29,51 @@
 
         if (window.location.pathname === '/') {
 
-          
           document.addEventListener('DOMContentLoaded', function() {
-          document.body.addEventListener('htmx:beforeSwap', (e) => {
-            if (e.detail.xhr.status === 422) {
-              // allow 422 responses to swap as we are using this as a signal that
-              // a form was submitted with bad data and want to rerender with the
-              // errors
-              //
-              // set isError to false to avoid error logging in console
-              e.detail.shouldSwap = true;
-              e.detail.isError = false;
-            }
-          });
-          
-          htmx.on('htmx:afterRequest', (e) => {
-            if (e.detail.xhr.status !== 422 && e.detail.elt.id === 'event-tab' || e.detail.elt.classList.contains('theme-row') || e.detail.elt.id === 'offcanvasBody') {
-              callCalendar();
-            }
-          });
+            document.body.addEventListener('htmx:beforeSwap', (e) => {
+              if (e.detail.xhr.status === 422) {
+                // allow 422 responses to swap as we are using this as a signal that
+                // a form was submitted with bad data and want to rerender with the
+                // errors
+                //
+                // set isError to false to avoid error logging in console
+                e.detail.shouldSwap = true;
+                e.detail.isError = false;
+              }
+            });
+            
+            htmx.on('htmx:afterRequest', (e) => {
+              console.log(e.detail.elt);
+              if (e.detail.xhr.status !== 422 && e.detail.elt.id === 'event-tab' || e.detail.elt.parentElement.id === 'delete-theme' ||  e.detail.elt.parentElement.id === 'delete-event-group' || e.detail.elt.id === 'new-event-form' || e.detail.elt.id === 'offcanvasBody') {
+                callCalendar();
+              }
+            });
 
-          callCalendar();
-          
+            callCalendar();
+            
+            htmx.on('htmx:afterRequest', (e) => {
+              console.log(e.detail.elt)
+              var form = e.detail.elt;
+              var inputs = form.getElementsByTagName('input')
+              console.log(inputs)
+              for(var i = 0; i < inputs.length; i++) {
+                  if (inputs[i].id == "id_duration") {
+                    inputs[i].value = "01:00";
+                  } else if (inputs[i].id == "id_repeats") {
+                    inputs[i].value = 1;
+                  } else if (inputs[i].type == "checkbox") {
+                    inputs[i].checked = false;
+                  } else if (inputs[i].id == "id_start") {
+                    inputs[i].value = moment().format('YYYY-MM-DDTHH:00');
+                  } else {
+                    inputs[i].value = '';  // Reset the value
+                  }
+              }
+              var times = form.querySelectorAll('.weekday_time_field');
+              times.forEach((time) => {
+                time.remove();
+              });
+            });
         });
         
 
