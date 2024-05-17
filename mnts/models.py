@@ -23,8 +23,8 @@ class EventGroup(models.Model):
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     total_days = models.PositiveIntegerField()
     start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    weekdays = models.CharField(max_length=200)
+    end_date = models.DateTimeField(null=True, blank=True)
+    weekdays = models.CharField(max_length=200, null=True, blank=True)
     
     def __str__(self):
         return f"name: {self.name}, total_days: {self.total_days}, theme: {self.theme.name}, start_date: {self.start_date}, end_date: {self.end_date}"
@@ -41,3 +41,4 @@ class Event(models.Model):
 
     def __str__(self):
         return f"theme: {self.event_group.theme}, group_name: {self.event_group.name}, number: {self.number}, description: {self.description}, start: {self.start.isoformat()}, duration: {self.duration}, end: {self.end.isoformat()}"
+    

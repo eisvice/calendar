@@ -1,0 +1,30 @@
+{% load widget_tweaks %}
+
+<tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 event-group-row">
+    <td class="px-6 py-4">
+        {{group.name}}
+    </td>
+    <td class="px-6 py-4">
+        {{group.theme.name}}
+    </td>
+    <td class="px-2 py-4">
+        {{group.total_days}}
+    </td>
+    <td class="px-6 py-4">
+        {{group.start_date|date:"j.m.y"}}
+    </td>
+    <td class="px-6 py-4">
+        {{group.end_date|date:"j.m.y"}}
+    </td>
+    <td class="px-6 py-4">
+        {{group.weekdays}}
+    </td>
+
+    <td id="delete-event-group" class="px-3 py-4 table-cell">
+        <a hx-delete="{% url 'event_group' id=group.id %}" hx-swap="delete swap:400ms" hx-target="closest tr" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-confirm="Are you sure you wish to delete the event group? The events inside of it will be deleted as well!" class="flex justify-center cursor-pointer">
+            <svg width="12" height="12" viewBox="0 0 24 24">
+                <path d="M20.197 2.837l.867.867-8.21 8.291 8.308 8.202-.866.867-8.292-8.21-8.23 8.311-.84-.84 8.213-8.32-8.312-8.231.84-.84 8.319 8.212 8.203-8.309zm-.009-2.837l-8.212 8.318-8.31-8.204-3.666 3.667 8.321 8.24-8.207 8.313 3.667 3.666 8.237-8.318 8.285 8.204 3.697-3.698-8.315-8.209 8.201-8.282-3.698-3.697z"/>
+            </svg>
+        </a>
+    </td>
+</tr>

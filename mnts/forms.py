@@ -1,3 +1,5 @@
+from distutils.command import clean
+from timeit import repeat
 from django import forms
 from .models import Theme, User
 from django.contrib.auth.forms import UserCreationForm
@@ -42,7 +44,7 @@ class ThemeForm(forms.ModelForm):
 
     class Meta:
         model = Theme
-        fields = ("name", "color", "text_color",)
+        fields = ("name", "color", "text_color", "user")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

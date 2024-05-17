@@ -1,0 +1,60 @@
+<div x-show="currentTab == 'Event Groups'" id="event-groups-tab" class="flex justify-center" style="display: none;">
+    <div class="relative overflow-x-auto">
+        <table id="event-groups-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Name
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Theme
+                    </th>
+                    <th scope="col" class="px-2 py-3">
+                        Σ
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Start Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        End Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Weekdays
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Delete
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in event_groups %}
+                    {% include 'mnts/event-group-row.html' %}
+                    {% empty %}
+                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td class="px-6 py-4">
+                            ------
+                        </td>
+                        <td class="px-6 py-4">
+                            ------
+                        </td>
+                        <td class="px-6 py-4">
+                            ------
+                        </td>
+                        <td class="px-6 py-4">
+                            ------
+                        </td>
+                        <td class="px-6 py-4">
+                            ------
+                        </td>
+                        <td class="px-6 py-4">
+                            ------
+                        </td>
+                        <td class="px-6 py-4">
+                            ------
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

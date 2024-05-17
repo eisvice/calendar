@@ -1,8 +1,8 @@
 import re
 import datetime
+import calendar
 from dateutil.parser import parse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
 from .models import User, Theme, EventGroup, Event
 from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView
@@ -13,7 +13,7 @@ from django.shortcuts import render
 from .forms import ThemeForm, EventForm, SignUpForm
 from django.http.request import QueryDict
 from django.db.utils import IntegrityError
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.views.decorators.http import require_POST, require_GET
 
 
@@ -40,51 +40,57 @@ class ResetPasswordView(PasswordResetView):
 def index(request):
     theme_form = ThemeForm()
     event_form = EventForm()
-    themes = Theme.objects.all()
+    themes = Theme.objects.filter(user=request.user)
     theme_forms = [ThemeForm(instance=theme) for theme in themes]
     themes_and_forms = zip(themes, theme_forms)
+    event_groups = EventGroup.objects.filter(theme__id__in=themes)
     context = {
-        "theme_form": theme_form,
         "event_form": event_form,
+        "event_groups": event_groups,
         "themes_and_forms": themes_and_forms,
+        "theme_form": theme_form,
+        "themes_count": themes.count(),
     }
     return render(request, "mnts/index.html", context)
 
-
+@login_required
 def get_dates(request):
-    print(request.GET)
     start_str = request.GET.get("start")
     end_str = request.GET.get("end")
     start = parse(start_str)
     end = parse(end_str)
-    print(start, end, type(start), type(end))
-    # print(timezone.is_aware(start), timezone.is_aware())
     context = []
-    dates = Event.objects.filter(start__range=(start, end))
+    dates = Event.objects.filter(user=request.user, start__range=(start, end))
     for date in dates:
         context.append(
             {
                 'id': date.id,
-                'title':date.title,
+                'title':f"{date.event_group.name} #{date.number}",
                 'description':date.description,
                 'start':date.start.isoformat(),
                 'hours':f"{date.duration}",
                 'end':date.end.isoformat(),
-                'color':date.theme.color,
-                'textColor':date.theme.text_color
+                'color':date.event_group.theme.color,
+                'textColor':date.event_group.theme.text_color
             }
         )
     return JsonResponse(context, safe=False)
 
 
 @require_POST
+@login_required
 def add_event(request):
     event_form = EventForm(request.POST)
     weekdays = {}
+    weekdays_str = ""
     if event_form.is_valid():
         data = event_form.cleaned_data
         current_tz = timezone.get_current_timezone()
         theme = data["theme"]
+        print(theme.id)
+        if Theme.objects.filter(pk=theme.id).exists() == False:
+            event_form.add_error("theme", "The Theme doesn't exist")
+            return render(request, "mnts/new-event.html", {"event_form": event_form}, status=422)
         title = data["title"]
         description = data["description"]
         start = data["start"]
@@ -95,30 +101,65 @@ def add_event(request):
             if re.search(r"time-\w+", key):
                 weekdays |= {int(key.replace("time-", "")): request.POST.get(key)}
         if repeats > 1 and len(weekdays) == 0:
-            return render(request, "mnts/new-event.html", {"event_form": event_form, "error": "Check some of the weekdays to assign more than 1 day"}, status=422)
+            event_form.add_error(None, "Check some of the weekdays to assign more than 1 day")
+            return render(request, "mnts/new-event.html", {"event_form": event_form}, status=422)
+        
+        new_event_group = EventGroup.objects.create(
+            name = title,
+            theme = Theme.objects.get(pk=theme.id),
+            total_days = repeats,
+            start_date = start,
+        )
+
         weekday_index = 0
         current_day = start
         while weekday_index < repeats:
             if current_day == start or current_day.weekday() in weekdays:
+                if current_day.weekday() in weekdays and str(calendar.day_name[current_day.weekday()]) not in weekdays_str:
+                    weekdays_str += f"{calendar.day_name[current_day.weekday()]} "
                 if current_day == start:
                     start_time = start
                 else:
                     start_time = timezone.make_aware(datetime.datetime.combine(current_day.date(), datetime.datetime.strptime(weekdays[current_day.weekday()], '%H:%M').time()))
+
                 new_event = Event.objects.create(
-                    theme=theme,
-                    title=f"{title} #{weekday_index+1}",
+                    number=weekday_index+1,
+                    event_group=new_event_group,
+                    user=request.user,
                     description=description,
                     start=start_time.astimezone(current_tz),
                     duration = duration_datetime,
                     end=start_time+datetime.timedelta(minutes=duration),
                 )
                 new_event.save()
+
+                if weekday_index == repeats - 1:
+                    new_event_group.weekdays = weekdays_str
+                    new_event_group.end_date = start_time.astimezone(current_tz)
+                    new_event_group.save(update_fields=["weekdays", "end_date"])
+
                 weekday_index += 1
+
             current_day += datetime.timedelta(days=1)
+
         return render(request, "mnts/new-event.html", {"event_form": EventForm()})
+    else:
+        return render(request, "mnts/new-event.html", {"event_form": event_form})
+
+
+@login_required
+def event_group(request, id):
+    event_group = EventGroup.objects.get(pk=id)
+    if event_group.theme.user == request.user:
+        if request.method == "DELETE":
+            event_group.delete()
+            return HttpResponse("event group was deleted")
+    else:
+        return HttpResponseNotAllowed()
 
 
 @require_POST
+@login_required
 def edit_event(request):
     data = request.POST
     id = int(data.get("event-id"))
@@ -126,46 +167,54 @@ def edit_event(request):
     new_duration_datetime = datetime.time.fromisoformat(data.get("new-duration"))
     new_duration = new_duration_datetime.hour * 60 + new_duration_datetime.minute
     event = Event.objects.get(pk=id)
-    event.start = timezone.make_aware(new_date)
-    event.duration = new_duration_datetime
-    event.end = timezone.make_aware(new_date + datetime.timedelta(minutes=new_duration))
-    event.save(update_fields=["start", "duration", "end"])
-    return HttpResponse()
+    if event.user == request.user:
+        event.start = timezone.make_aware(new_date)
+        event.duration = new_duration_datetime
+        event.end = timezone.make_aware(new_date + datetime.timedelta(minutes=new_duration))
+        event.save(update_fields=["start", "duration", "end"])
+        return HttpResponse()
+    else:
+        return HttpResponseNotAllowed()
 
 
 @require_POST
+@login_required
 def add_theme(request):
-    theme_form = ThemeForm(request.POST)
+    post_data = request.POST.copy()  # Make a mutable copy of the POST data
+    post_data.update({'user': request.user})  # Add the user id to the POST data
+    theme_form = ThemeForm(post_data)
+    print(theme_form.is_valid())
     if theme_form.is_valid():
-        try:
-            data = theme_form.cleaned_data
-            name = data["name"]
-            color = data["color"]
-            text_color = data["text_color"]
-            theme = Theme.objects.create(name=name, color=color, text_color=text_color)
-            theme.save()
-            themes = Theme.objects.all()
-            theme_forms = [ThemeForm(instance=theme) for theme in themes]
-            themes_and_forms = zip(themes, theme_forms)
-            context = {
-                "theme_form": ThemeForm(),
-                "event_form": EventForm(),
-                "themes_and_forms": themes_and_forms,
-            }
-            return render(request, "mnts/settings-content.html", context)
-        except IntegrityError:
-            return render(request, "mnts/new-theme.html", {"theme_form": theme_form, "errors": "Create a unique theme"})
+        theme_form.save()
+
+    themes = Theme.objects.filter(user=request.user)
+    theme_forms = [ThemeForm(instance=theme) for theme in themes]
+    themes_and_forms = zip(themes, theme_forms)
+    context = {
+        "theme_form": ThemeForm(),
+        "event_form": EventForm(),
+        "themes_and_forms": themes_and_forms,
+    }
+    return render(request, "mnts/settings-content.html", context)
         
 
+@login_required
 def edit_theme(request, id):
     theme = Theme.objects.get(pk=id)
-    if request.method == "DELETE":
-        theme.delete()
-        return HttpResponse("theme was deleted")
-    elif request.method == "PATCH":
-        data = QueryDict(request.body)
-        print(data)
-        theme_form = ThemeForm(data, instance=theme)
-        if theme_form.is_valid():
-            theme_form.save()
-            return render(request, "mnts/theme-row.html", {"form": ThemeForm(instance=theme), "theme": theme})
+    if theme.user == request.user:
+        if request.method == "DELETE":
+            theme.delete()
+            return HttpResponse("theme was deleted")
+        elif request.method == "PATCH":
+            data = QueryDict(request.body).copy()
+            data.update({'user': request.user})
+            print(data)
+            theme_form = ThemeForm(data, instance=theme)
+            if theme_form.is_valid():
+                theme_form.save()
+                return render(request, "mnts/theme-row.html", {
+                    "form": ThemeForm(instance=theme), 
+                    "theme": theme,
+                    })
+    else:
+        return HttpResponseNotAllowed()

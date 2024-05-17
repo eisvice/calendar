@@ -13,6 +13,15 @@
             </li>
             <li>
                 <a
+                href="#event-groups-tab"
+                class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-b-indigo-500 dark:text-white/50 dark:hover:bg-neutral-700/60"
+                @click="currentTab=$el.innerHTML"
+                :class="currentTab == $el.innerHTML ? 'border-b-indigo-500 hover:border-b-indigo-500 hover:bg-transparent' : 'border-transparent'"
+                >Event Groups</a
+                >
+            </li>
+            <li>
+                <a
                 href="#themes-tab"
                 class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-b-indigo-500 dark:text-white/50 dark:hover:bg-neutral-700/60"
                 @click="currentTab=$el.innerHTML"
@@ -32,6 +41,7 @@
         </ul>
         <div id="settings-content">
             {% include 'mnts/new-event.html' %}
+            {% include 'mnts/event-groups.html' %}
             {% include 'mnts/themes.html' %}
             {% include 'mnts/new-theme.html' %}
         </div>
