@@ -2,7 +2,7 @@ import Alpine from 'alpinejs'
 import morph from '@alpinejs/morph'
 import '../styles/index.css'
 import './htmx_file.js'
-import './htmx-alpine-morph.js'
+import 'htmx.org/dist/ext/response-targets.js'
 var moment = require('moment');
 
 window.Alpine = Alpine

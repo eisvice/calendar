@@ -1,54 +1,53 @@
 {% load widget_tweaks %}
 
-<div x-show="currentTab == 'New Theme'" id="theme-tab" class="flex justify-center">
-    <form hx-post="{% url 'add_theme' %}" hx-target="#calendar-settings" id="new-theme-form" class="w-full max-w-md">
-        {% csrf_token %}
-        {% if errors %}
-        <div class="flex items-center p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300" role="alert">
-            <svg class="flex-shrink-0 inline w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-            </svg>
-            <span class="sr-only">Info</span>
-            <div>{{errors}}</div>
-        </div>
-        {% endif %}
-        <div class="md:flex md:items-center mb-6">
-            <div class="md:w-1/3">
-                <label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="{{ theme_form.name.id_for_label }}">
-                    Theme
-                </label>
+<template x-if="currentTab == 'New Theme'">
+    <div id="theme-tab" class="flex justify-center">
+        <form hx-post="{% url 'add_theme' %}" hx-target="#settings-content" hx-select="#settings-content" id="new-theme-form" class="w-full max-w-md">
+            {% if theme_form.non_field_errors %}
+            <div class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                <svg class="flex-shrink-0 inline w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                </svg>
+                <span class="sr-only">Info</span>
+                <div>{{ theme_form.non_field_errors }}</div>
             </div>
-            <div class="md:w-2/3 ">
-                {% render_field theme_form.name class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" placeholder="Enter Theme Name" autocomplete="off" %}
+            {% endif %}
+            {% csrf_token %}
+            <div class="md:flex md:items-center mb-6">
+                <div class="md:w-1/3">
+                    {{ theme_form.name|add_label_class:"block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" }}
+                </div>
+                <div class="md:w-2/3 ">
+                    {% render_field theme_form.name class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" placeholder="Enter Theme Name" autocomplete="off" %}
+                    <p>{{ theme_form.name.errors }}</p>
+                </div>
             </div>
-        </div>
-        <div class="md:flex md:items-center mb-6">
-            <div class="md:w-1/3">
-                <label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="background-color">
-                    Background Color
-                </label>
+            <div class="md:flex md:items-center mb-6">
+                <div class="md:w-1/3">
+                    {{ theme_form.color|add_label_class:"block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" }}
+                </div>
+                <div class="md:w-2/3">
+                    {% render_field theme_form.color type="color" value="#fc036f" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full px-4 text-gray-700 h-10 focus:outline-none focus:bg-white focus:border-purple-500" %}
+                    <p>{{ theme_form.color.errors }}</p>
+                </div>
             </div>
-            <div class="md:w-2/3">
-                {% render_field theme_form.color id="background-color" type="color" value="#fc036f" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full px-4 text-gray-700 h-10 focus:outline-none focus:bg-white focus:border-purple-500" %}
+            <div class="md:flex md:items-center mb-6">
+                <div class="md:w-1/3">
+                    {{ theme_form.text_color|add_label_class:"block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" }}
+                </div>
+                <div class="md:w-2/3">
+                    {% render_field theme_form.text_color type="color" value="#ffffff" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full px-4 text-gray-700 h-10 focus:outline-none focus:bg-white focus:border-purple-500" %}
+                    <p>{{ theme_form.text_color.errors }}</p>
+                </div>
             </div>
-        </div>
-        <div class="md:flex md:items-center mb-6">
-            <div class="md:w-1/3">
-                <label class="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" for="text-color">
-                    Text Color
-                </label>
+            <div class="md:flex md:items-center">
+                <div class="md:w-1/3"></div>
+                <div class="md:w-2/3">
+                    <button class="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold w-4/12 py-2 px-2 rounded" type="submit">
+                        Add Theme
+                    </button>
+                </div>
             </div>
-            <div class="md:w-2/3">
-                {% render_field theme_form.text_color id="text-color" type="color" value="#ffffff" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full px-4 text-gray-700 h-10 focus:outline-none focus:bg-white focus:border-purple-500" %}
-            </div>
-        </div>
-        <div class="md:flex md:items-center">
-            <div class="md:w-1/3"></div>
-            <div class="md:w-2/3">
-                <button class="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold w-4/12 py-2 px-2 rounded" type="submit">
-                    Add Theme
-                </button>
-            </div>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
+</template>

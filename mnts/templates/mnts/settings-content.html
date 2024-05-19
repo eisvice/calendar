@@ -1,4 +1,15 @@
-<div x-data="{ open: false, currentTab: '{{currentTab}}' }" id="calendar-settings">
+<div id="calendar-settings" hx-ext="response-targets" x-data="{ open: false, currentTab: 'Event' }" 
+    x-init="$watch('currentTab', new_value => {
+        if (currentTab === 'Event') {
+            htmx.process(htmx.find('#event-tab'))
+        } else if (currentTab === 'Event Groups') {
+            htmx.process(htmx.find('#event-groups-tab'))
+        } else if (currentTab === 'Themes') {
+            htmx.process(htmx.find('#themes-tab'))
+        } else if (currentTab === 'New Theme') {
+            htmx.process(htmx.find('#theme-tab'))
+        }
+    })">
     <button @click="open = ! open" class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none">Open Settings</button>
     <div x-show="open" id="event-settings">
         <ul class="mb-5 flex list-none flex-row flex-wrap justify-center border-b-0 ps-0">
@@ -40,7 +51,7 @@
             </li>
         </ul>
         <div id="settings-content">
-            {% include 'mnts/new-event.html' %}
+            {% include 'mnts/new-event.html' %}         
             {% include 'mnts/event-groups.html' %}
             {% include 'mnts/themes.html' %}
             {% include 'mnts/new-theme.html' %}

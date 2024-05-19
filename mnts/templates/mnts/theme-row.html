@@ -18,12 +18,12 @@
         </a>
     </td>
     <td x-show="showForm == false" id="delete-theme" class="px-3 py-4 table-cell">
-        <a hx-delete="{% url 'theme' id=theme.id %}" hx-swap="delete swap:400ms" hx-target="closest tr" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-confirm="Are you sure you wish to delete the theme. If it has events, they will be deleted as well?" class="flex justify-center cursor-pointer">
+        <a hx-delete="{% url 'theme' id=theme.id %}" hx-swap="outerHTML" hx-target="#settings-content" hx-select="#settings-content" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-confirm="Are you sure you wish to delete the theme. If it has events, they will be deleted as well?" class="flex justify-center cursor-pointer">
             <svg width="12" height="12" viewBox="0 0 24 24"><path d="M20.197 2.837l.867.867-8.21 8.291 8.308 8.202-.866.867-8.292-8.21-8.23 8.311-.84-.84 8.213-8.32-8.312-8.231.84-.84 8.319 8.212 8.203-8.309zm-.009-2.837l-8.212 8.318-8.31-8.204-3.666 3.667 8.321 8.24-8.207 8.313 3.667 3.666 8.237-8.318 8.285 8.204 3.697-3.698-8.315-8.209 8.201-8.282-3.698-3.697z"/></svg>
         </a>
     </td>
     <td colspan="5" x-show="showForm == true" class="px-2 py-4 max-w-lg" style="display: none;">
-        <form hx-patch="{% url 'theme' id=theme.id %}" hx-target="closest tr" hx-swap="outerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <form hx-patch="{% url 'theme' id=theme.id %}" hx-target="#settings-content" hx-select="#settings-content" hx-swap="outerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
             <div class="md:flex md:items-center">
                 <div class="md:w-1/4 pr-6">
                     {% render_field form.name autocomplete="off" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 md:px-2 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" %}

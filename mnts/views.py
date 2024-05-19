@@ -80,6 +80,7 @@ def get_dates(request):
 @require_POST
 @login_required
 def add_event(request):
+    print(request.headers)
     event_form = EventForm(request.POST)
     weekdays = {}
     weekdays_str = ""
@@ -87,10 +88,22 @@ def add_event(request):
         data = event_form.cleaned_data
         current_tz = timezone.get_current_timezone()
         theme = data["theme"]
-        print(theme.id)
         if Theme.objects.filter(pk=theme.id).exists() == False:
             event_form.add_error("theme", "The Theme doesn't exist")
-            return render(request, "mnts/new-event.html", {"event_form": event_form}, status=422)
+            event_form_return = event_form
+            status = 422
+            themes = Theme.objects.filter(user=request.user)
+            theme_forms = [ThemeForm(instance=theme) for theme in themes]
+            themes_and_forms = zip(themes, theme_forms)
+            event_groups = EventGroup.objects.filter(theme__id__in=themes).order_by("id")
+            context = {
+                "event_form": event_form_return,
+                "theme_form": ThemeForm(),
+                "themes_and_forms": themes_and_forms,
+                "event_groups": event_groups,
+                "themes_count": themes.count(),
+            }
+            return render(request, "mnts/settings-content.html", context, status=status)
         title = data["title"]
         description = data["description"]
         start = data["start"]
@@ -102,7 +115,20 @@ def add_event(request):
                 weekdays |= {int(key.replace("time-", "")): request.POST.get(key)}
         if repeats > 1 and len(weekdays) == 0:
             event_form.add_error(None, "Check some of the weekdays to assign more than 1 day")
-            return render(request, "mnts/new-event.html", {"event_form": event_form}, status=422)
+            event_form_return = event_form
+            status = 422
+            themes = Theme.objects.filter(user=request.user)
+            theme_forms = [ThemeForm(instance=theme) for theme in themes]
+            themes_and_forms = zip(themes, theme_forms)
+            event_groups = EventGroup.objects.filter(theme__id__in=themes).order_by("id")
+            context = {
+                "event_form": event_form_return,
+                "theme_form": ThemeForm(),
+                "themes_and_forms": themes_and_forms,
+                "event_groups": event_groups,
+                "themes_count": themes.count(),
+            }
+            return render(request, "mnts/settings-content.html", context, status=status)
         
         new_event_group = EventGroup.objects.create(
             name = title,
@@ -137,22 +163,27 @@ def add_event(request):
                     new_event_group.weekdays = weekdays_str
                     new_event_group.end_date = start_time.astimezone(current_tz)
                     new_event_group.save(update_fields=["weekdays", "end_date"])
-
                 weekday_index += 1
-
             current_day += datetime.timedelta(days=1)
+        event_form_return = EventForm()
+        status=200
 
-        themes = Theme.objects.filter(user=request.user)
-        event_groups = EventGroup.objects.filter(theme__id__in=themes).order_by("id")
-        context = {
-            "event_form": EventForm(),
-            "theme_form": ThemeForm(),
-            "event_groups": event_groups,
-            "currentTab": "Event",
-        }
-        return render(request, "mnts/settings-content.html", context)
     else:
-        return render(request, "mnts/new-event.html", {"event_form": event_form})
+        event_form_return = event_form
+        status = 422
+
+    themes = Theme.objects.filter(user=request.user)
+    theme_forms = [ThemeForm(instance=theme) for theme in themes]
+    themes_and_forms = zip(themes, theme_forms)
+    event_groups = EventGroup.objects.filter(theme__id__in=themes).order_by("id")
+    context = {
+        "event_form": event_form_return,
+        "theme_form": ThemeForm(),
+        "themes_and_forms": themes_and_forms,
+        "event_groups": event_groups,
+        "themes_count": themes.count(),
+    }
+    return render(request, "mnts/settings-content.html", context, status=status)
 
 
 @login_required
@@ -194,18 +225,23 @@ def add_theme(request):
     print(theme_form.is_valid())
     if theme_form.is_valid():
         theme_form.save()
-
+        theme_form_return = ThemeForm()
+        status = 200
+    else:
+        theme_form_return = theme_form
+        status = 422
     themes = Theme.objects.filter(user=request.user)
     theme_forms = [ThemeForm(instance=theme) for theme in themes]
     themes_and_forms = zip(themes, theme_forms)
     event_groups = EventGroup.objects.filter(theme__id__in=themes)
     context = {
-        "theme_form": ThemeForm(),
+        "theme_form": theme_form_return,
         "event_form": EventForm(),
         "themes_and_forms": themes_and_forms,
         "event_groups": event_groups,
+        "themes_count": themes.count(),
     }
-    return render(request, "mnts/settings-content.html", context)
+    return render(request, "mnts/settings-content.html", context, status=status)
         
 
 @login_required
@@ -214,17 +250,27 @@ def edit_theme(request, id):
     if theme.user == request.user:
         if request.method == "DELETE":
             theme.delete()
-            return HttpResponse("theme was deleted")
+            status = 200
+
         elif request.method == "PATCH":
             data = QueryDict(request.body).copy()
             data.update({'user': request.user})
-            print(data)
             theme_form = ThemeForm(data, instance=theme)
             if theme_form.is_valid():
                 theme_form.save()
-                return render(request, "mnts/theme-row.html", {
-                    "form": ThemeForm(instance=theme), 
-                    "theme": theme,
-                    })
+                status = 200
+
+        themes = Theme.objects.filter(user=request.user)
+        theme_forms = [ThemeForm(instance=theme) for theme in themes]
+        themes_and_forms = zip(themes, theme_forms)
+        event_groups = EventGroup.objects.filter(theme__id__in=themes)
+        context = {
+            "theme_form": ThemeForm(),
+            "event_form": EventForm(),
+            "themes_and_forms": themes_and_forms,
+            "event_groups": event_groups,
+            "themes_count": themes.count(),
+        }
+        return render(request, "mnts/settings-content.html", context, status=status)
     else:
         return HttpResponseNotAllowed()

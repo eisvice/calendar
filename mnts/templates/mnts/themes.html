@@ -1,49 +1,51 @@
-<div x-show="currentTab == 'Themes'" id="themes-tab" class="flex justify-center">
-    <div class="relative overflow-x-auto">
-        <table id="themes-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th scope="col" class="px-6 py-3">
-                        Title
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Background Color
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Text Color
-                    </th>
-                    <th scope="col" class="px-3 py-3">
-                        Edit
-                    </th>
-                    <th scope="col" class="px-3 py-3">
-                        Delete
-                    </th>
-
-                </tr>
-            </thead>
-            <tbody>
-                {% for theme, form in themes_and_forms %}
-                    {% include 'mnts/theme-row.html' %}
-                {% empty %}
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            ------
+<template x-if="currentTab == 'Themes'">
+    <div id="themes-tab" class="flex justify-center">
+        <div class="relative overflow-x-auto">
+            <table id="themes-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">
+                            Title
                         </th>
-                        <td class="px-6 py-4">
-                            ------
-                        </td>
-                        <td class="px-6 py-4">
-                            ------
-                        </td>
-                        <td class="px-3 py-4">
-                            ------
-                        </td>
-                        <td class="px-3 py-4">
-                            ------
-                        </td>
+                        <th scope="col" class="px-6 py-3">
+                            Background Color
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Text Color
+                        </th>
+                        <th scope="col" class="px-3 py-3">
+                            Edit
+                        </th>
+                        <th scope="col" class="px-3 py-3">
+                            Delete
+                        </th>
+    
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for theme, form in themes_and_forms %}
+                        {% include 'mnts/theme-row.html' %}
+                    {% empty %}
+                        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                ------
+                            </th>
+                            <td class="px-6 py-4">
+                                ------
+                            </td>
+                            <td class="px-6 py-4">
+                                ------
+                            </td>
+                            <td class="px-3 py-4">
+                                ------
+                            </td>
+                            <td class="px-3 py-4">
+                                ------
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+</template>
