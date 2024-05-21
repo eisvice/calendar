@@ -18,7 +18,12 @@
   },
   "dependencies": {
     "@alpinejs/morph": "^3.13.10",
+    "@fullcalendar/core": "^6.1.11",
+    "@fullcalendar/daygrid": "^6.1.11",
+    "@fullcalendar/list": "^6.1.11",
+    "@fullcalendar/timegrid": "^6.1.11",
     "alpinejs": "^3.13.8",
+    "bootstrap": "^5.3.3",
     "htmx-ext-response-targets": "^2.0.0",
     "htmx.org": "^1.9.11",
     "moment": "^2.30.1",

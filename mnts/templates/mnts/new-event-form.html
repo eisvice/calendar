@@ -2,7 +2,6 @@
 
 <div class="form-wrapper">
     <form hx-post="{% url 'add_event' %}" hx-swap="outerHTML" hx-target="#settings-content" hx-target-422="closest .form-wrapper" id="new-event-form" class="w-full max-w-md">
-    {% comment %} <form hx-post="{% url 'add_event' %}" hx-target="#calendar-settings" hx-swap="outerHTML" class="w-full max-w-md"> {% endcomment %}
         {% if themes_count == 0 %}
             <div class="flex items-center p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400" role="alert">
                 <svg class="flex-shrink-0 inline w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -78,4 +77,4 @@
             </div>
         </div>
     </form>
-    <div>
+<div>

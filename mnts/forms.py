@@ -58,7 +58,7 @@ class ThemeForm(forms.ModelForm):
 class EventForm(forms.Form):
     theme = EventChoiceField(label="Choose Theme", queryset=Theme.objects.all(), to_field_name="name", required=True)
     title = forms.CharField(label="Event Title", max_length=20)
-    description = forms.CharField(label="Description")
+    description = forms.CharField(label="Description", required=False)
     start = forms.DateTimeField(label="Start Time", widget=CustomDateTimeWidget(format='%Y-%m-%d %H:%M'))
     duration = forms.TimeField(label="Event Duration", initial="01:00", widget=CustomTimeWidget)
     repeats = forms.IntegerField(initial=1, min_value=1)

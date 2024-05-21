@@ -3,13 +3,13 @@
 <div class="form-wrapper w-full flex justify-center">
     <form hx-post="{% url 'add_theme' %}" hx-target="#settings-content" hx-target-422="closest .form-wrapper" hx-swap="outerHTML" id="new-theme-form" class="w-full max-w-md">
         {% if theme_form.non_field_errors %}
-        <div class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-            <svg class="flex-shrink-0 inline w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-            </svg>
-            <span class="sr-only">Info</span>
-            <div>{{ theme_form.non_field_errors }}</div>
-        </div>
+            <div class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                <svg class="flex-shrink-0 inline w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                </svg>
+                <span class="sr-only">Info</span>
+                <div>{{ theme_form.non_field_errors }}</div>
+            </div>
         {% endif %}
         {% csrf_token %}
         <div class="md:flex md:items-center mb-6">
@@ -18,7 +18,7 @@
             </div>
             <div class="md:w-2/3 ">
                 {% render_field theme_form.name class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" placeholder="Enter Theme Name" autocomplete="off" %}
-                <p>{{ theme_form.name.errors }}</p>
+                {{ theme_form.name.errors }}
             </div>
         </div>
         <div class="md:flex md:items-center mb-6">
@@ -27,7 +27,7 @@
             </div>
             <div class="md:w-2/3">
                 {% render_field theme_form.color type="color" value="#fc036f" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full px-4 text-gray-700 h-10 focus:outline-none focus:bg-white focus:border-purple-500" %}
-                <p>{{ theme_form.color.errors }}</p>
+                {{ theme_form.color.errors }}
             </div>
         </div>
         <div class="md:flex md:items-center mb-6">
@@ -36,7 +36,7 @@
             </div>
             <div class="md:w-2/3">
                 {% render_field theme_form.text_color type="color" value="#ffffff" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full px-4 text-gray-700 h-10 focus:outline-none focus:bg-white focus:border-purple-500" %}
-                <p>{{ theme_form.text_color.errors }}</p>
+                {{ theme_form.text_color.errors }}
             </div>
         </div>
         <div class="md:flex md:items-center">

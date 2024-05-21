@@ -1,144 +1,28 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-white">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Alpine{% endblock %}</title>
+        <script type="text/javascript">
+            var datesUrl = "{% url 'dates' %}";
+            var editThemeUrl = "{% url 'edit_event' %}"
+        </script>
+        <script defer src="{% static 'bundle.js' %}"></script>
+        <link href="{% static 'output.css' %}" rel="stylesheet">
+        <script>
+            // Timezone settings
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.cookie = "django_timezone=" + timezone;
+        </script>
+    </head>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Alpine{% endblock %}</title>
-    <script defer src="{% static 'bundle.js' %}"></script>
-    <link href="{% static 'output.css' %}" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="{% static 'moment_bundle.js' %}"></script>
-    <script type='importmap'>
-        {
-          "imports": {
-            "@fullcalendar/core": "https://cdn.skypack.dev/@fullcalendar/core@6.1.11",
-            "@fullcalendar/daygrid": "https://cdn.skypack.dev/@fullcalendar/daygrid@6.1.11",
-            "@fullcalendar/timegrid": "https://cdn.skypack.dev/@fullcalendar/timegrid@6.1.11",
-            "@fullcalendar/list": "https://cdn.skypack.dev/@fullcalendar/list@6.1.11"
-
-          }
-        }
-    </script>
-    <script type="module">
-        import { Calendar } from '@fullcalendar/core'
-        import dayGridPlugin from '@fullcalendar/daygrid'
-        import timeGridPlugin from '@fullcalendar/timegrid'
-        import listPlugin from '@fullcalendar/list'
-
-        if (window.location.pathname === '/') {
-
-          document.addEventListener('DOMContentLoaded', function() {
-            document.body.addEventListener('htmx:beforeSwap', (e) => {
-              console.log('before swap', e.detail.elt);
-              if (e.detail.xhr.status === 422) {
-                (console.log(e.detail));
-                // allow 422 responses to swap as we are using this as a signal that
-                // a form was submitted with bad data and want to rerender with the
-                // errors
-                //
-                // set isError to false to avoid error logging in console
-                e.detail.shouldSwap = true;
-                e.detail.isError = false;
-                (console.log(e.detail));
-
-              } else if (e.detail.elt.id === 'calendar-settings' || e.detail.elt.id === 'settings-content') {
-                callCalendar();
-              }
-            });
-            
-            htmx.on('htmx:afterRequest', (e) => {
-              console.log('after request', e.detail.elt);
-              if (e.detail.xhr.status !== 422 && e.detail.elt.id === 'event-tab' || e.detail.elt.parentElement.id === 'delete-theme' ||  e.detail.elt.parentElement.id === 'delete-event-group' || e.detail.elt.id === 'new-event-form' || e.detail.elt.id === 'event-tab' || e.detail.elt.id === 'offcanvasBody') {
-                callCalendar();
-              }
-            });
-
-            callCalendar();
-            
-        });
-        
-
-        function callCalendar() {
-          var calendarEl = document.getElementById('calendar');
-          var calendar = new Calendar(calendarEl, {
-            nowIndicator: true,
-            weekNumberCalculation: "ISO",
-            views: {
-                timeGridWeek: {
-                    dayHeaderFormat: { weekday: 'short', day: 'numeric', month: 'numeric'}
-                }
-            },
-            slotMinTime: '08:00:00',
-            contentHeight:"auto",
-            plugins: [dayGridPlugin,timeGridPlugin,listPlugin],
-            initialView: 'timeGridWeek',
-            headerToolbar: {
-              left: 'prev,today,next',
-              center: 'title',
-              right: 'dayGridMonth,timeGridWeek,listWeek'
-            },
-            events: '{%url "dates"%}',
-            eventClick: function(info) {
-              console.log(moment().format());
-              // Get the offcanvas element
-              var offcanvasEl = document.getElementById('offcanvasSidebar');
-              offcanvasEl.querySelector('#offcanvasSidebarLabel').innerHTML = `${info.event.title}`;
-              // Set the event details as the content of the offcanvas
-              offcanvasEl.querySelector('#offcanvasBody').innerHTML = `
-                <form hx-post="{% url 'edit_event' %}" hx-target="#offcanvasBody">
-                  {% csrf_token %}
-                  <input id="event-id" name="event-id" class="form-control" type="number" value="${info.event.id}" hidden/>
-                  <div class="mb-3">
-                    <label for="old-start-time" class="form-label">Current Appointment:</label>
-                    <input id="old-start-time" name="old-start-time" class="form-control" type="datetime-local" value="${moment(info.event.start).format('YYYY-MM-DDTHH:mm:ss')}" disabled readonly/>
-                  </div>
-                  <div class="mb-3">
-                    <label for="old-duration" class="form-label">Current Duration:</label>
-                    <input id="old-duration" name="old-duration" class="form-control" type="time" value="${info.event.extendedProps.hours}" disabled readonly/>
-                  </div>
-                  <div class="mb-3">
-                    <label for="new-start-time" class="form-label">New Appointment:</label>
-                    <input id="new-start-time" name="new-start-time" class="form-control" type="datetime-local" value="${moment(info.event.start).format('YYYY-MM-DDTHH:mm:ss')}"/>
-                  </div>
-                  <div class="mb-3">
-                    <label for="new-duration" class="form-label">Duration:</label>
-                    <input id="new-duration" name="new-duration" class="form-control" type="time" value="${info.event.extendedProps.hours}"/>
-                  </div>
-                  <div class="d-grid gap-2 col-11 mx-auto" style="margin-top: 30px;">
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">Save</button>
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
-                  </div>
-                </form>
-                `;
-                
-              // Trigger the offcanvas
-              var offcanvas = new bootstrap.Offcanvas(offcanvasEl);
-              offcanvas.show();
-              htmx.process(document.getElementById('offcanvasBody'));
-            }
-          });
-          calendar.render();
-        }
-
-      }
-      </script>
-
-      <script>
-        // Timezone settings
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        document.cookie = "django_timezone=" + timezone;
-      </script>
-</head>
-<body class="h-full">
-
-  <div id="content">
-    {% block content %}{% endblock %}
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
-</body>
+    <body class="h-full">
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+    </body>
 
 </html>

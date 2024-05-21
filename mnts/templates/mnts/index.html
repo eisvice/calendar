@@ -1,43 +1,30 @@
 {% extends "mnts/layout.html" %}
-{% load static %}
 
 {% block content %}
-    <h1 id="page-title">Page Title</h1>
-    {{user}} <a href="{% url 'change_password' %}">Change password</a>
+    <p>
+    <span class="box-decoration-clone bg-gradient-to-r from-indigo-600 to-pink-500 text-white px-2">
+        Hello <br />
+            {{user}}!
+        </span>
+    </p>
+    <a href="{% url 'change_password' %}">Change password</a>
     <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit">logout</button>
     </form>
-    <h1 x-data="{ message: 'I ❤️ Alpine' }" x-text="message"></h1>
-    <p>
-        <span class="box-decoration-clone bg-gradient-to-r from-indigo-600 to-pink-500 text-white px-2">
-            Hello <br />
-            world!
-        </span>
-    </p>
 
-    <button type="button" class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2" hx-get="{% url 'index' %}" hx-trigger="click" hx-swap="outerHTML">Click</button>
-    <div id="datetime" x-data="{ timeNow: new Date() }" x-text="timeNow"></div>
-    <div x-data="{ count: 0 }">
-        <button class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2" x-on:click="count++">Increment</button>
-        <span x-text="count"></span>
-    </div>
     {% include 'mnts/settings-content.html' %}
     <div class="p-4" id='calendar'></div>
-
-
-    <a class="btn btn-primary" data-bs-toggle="offcanvas" href="#offcanvasSidebar" role="button" aria-controls="offcanvasSidebar">
-        Link with href
-    </a>
-    <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar" aria-controls="offcanvasSidebar">
-        Button with data-bs-target
-    </button>
     
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasSidebar" aria-labelledby="offcanvasSidebarLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasSidebarLabel"></h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
+
+        <div id="offcanvasDescription" class="px-3">
+        </div>
+
         <div id="offcanvasBody" class="offcanvas-body">
         </div>
     </div>
