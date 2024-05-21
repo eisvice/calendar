@@ -1,6 +1,4 @@
-{% load widget_tweaks %}
-
-<tr x-data="{ showForm: false }" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 theme-row">
+<tr x-data="{ showForm: false, showRow: true }" x-show="showRow" x-transition.duration.400ms class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 theme-row">
     <th x-show="showForm == false" scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
         {{theme.name}}
     </th>
@@ -18,33 +16,9 @@
         </a>
     </td>
     <td x-show="showForm == false" id="delete-theme" class="px-3 py-4 table-cell">
-        <a hx-delete="{% url 'theme' id=theme.id %}" hx-swap="outerHTML" hx-target="#settings-content" hx-select="#settings-content" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-confirm="Are you sure you wish to delete the theme. If it has events, they will be deleted as well?" class="flex justify-center cursor-pointer">
+        <a @click="showRow = false" hx-delete="{% url 'theme' id=theme.id %}" hx-swap="outerHTML swap:400ms" hx-target="#settings-content" hx-select="#settings-content" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-confirm="Are you sure you wish to delete the theme. If it has events, they will be deleted as well?" class="flex justify-center cursor-pointer">
             <svg width="12" height="12" viewBox="0 0 24 24"><path d="M20.197 2.837l.867.867-8.21 8.291 8.308 8.202-.866.867-8.292-8.21-8.23 8.311-.84-.84 8.213-8.32-8.312-8.231.84-.84 8.319 8.212 8.203-8.309zm-.009-2.837l-8.212 8.318-8.31-8.204-3.666 3.667 8.321 8.24-8.207 8.313 3.667 3.666 8.237-8.318 8.285 8.204 3.697-3.698-8.315-8.209 8.201-8.282-3.698-3.697z"/></svg>
         </a>
     </td>
-    <td colspan="5" x-show="showForm == true" class="px-2 py-4 max-w-lg" style="display: none;">
-        <form hx-patch="{% url 'theme' id=theme.id %}" hx-target="#settings-content" hx-select="#settings-content" hx-swap="outerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-            <div class="md:flex md:items-center">
-                <div class="md:w-1/4 pr-6">
-                    {% render_field form.name autocomplete="off" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 md:px-2 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" %}
-                </div>
-                <div class="md:w-1/4 px-6 flex justify-center">
-                    {% render_field form.color type="color" %}
-                </div>
-                <div class="md:w-1/4 px-6 flex justify-center">
-                    {% render_field form.text_color type="color" %}
-                </div>
-                <div class="md:w-1/8 px-2 flex justify-center">
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-full">
-                        Save
-                    </button>
-                </div>
-                <div @click="showForm = false" class="md:w-1/8 pl-3 pr-0 flex justify-center">
-                    <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-full">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </form>
-    </td>
+    {% include 'mnts/theme-row-form.html' %}
 </tr>

@@ -1,0 +1,28 @@
+{% load widget_tweaks %}
+
+<td colspan="5" x-show="showForm == true" class="px-2 py-4 max-w-lg" style="display: none;">
+    <form hx-patch="{% url 'theme' id=theme.id %}" hx-target="#settings-content" hx-target-422="closest td" hx-swap="outerHTML" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <div>{{form.non_field_errors}}{{form.name.errors}}{{form.color.errors}}{{form.text_color.errors}}</div>
+        <div class="md:flex md:items-center">
+            <div class="md:w-1/4 pr-6">
+                {% render_field form.name autocomplete="off" class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 md:px-2 sm:px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" %}
+            </div>
+            <div class="md:w-1/4 px-6 flex justify-center">
+                {% render_field form.color type="color" %}
+            </div>
+            <div class="md:w-1/4 px-6 flex justify-center">
+                {% render_field form.text_color type="color" %}
+            </div>
+            <div class="md:w-1/8 px-2 flex justify-center">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-full">
+                    Save
+                </button>
+            </div>
+            <div @click="showForm = false" class="md:w-1/8 pl-3 pr-0 flex justify-center">
+                <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded-full">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </form>
+</td>

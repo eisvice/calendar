@@ -1,4 +1,4 @@
-<div id="calendar-settings" hx-ext="response-targets" x-data="{ open: false, currentTab: 'Event' }" 
+<div id="calendar-settings"  hx-ext="response-targets" x-data="{ open: false, currentTab: 'Event' }" 
     x-init="$watch('currentTab', new_value => {
         if (currentTab === 'Event') {
             htmx.process(htmx.find('#event-tab'))
@@ -50,11 +50,6 @@
                 >
             </li>
         </ul>
-        <div id="settings-content">
-            {% include 'mnts/new-event.html' %}         
-            {% include 'mnts/event-groups.html' %}
-            {% include 'mnts/themes.html' %}
-            {% include 'mnts/new-theme.html' %}
-        </div>
+        {% include 'mnts/event-settings.html' %}
     </div>
 </div>

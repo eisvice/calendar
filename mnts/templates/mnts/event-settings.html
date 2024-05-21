@@ -1,0 +1,18 @@
+<div id="settings-content" 
+x-init="$watch('currentTab', new_value => {
+    console.log('kdkdk')
+    if (currentTab === 'Event') {
+        htmx.process(htmx.find('#event-tab'))
+    } else if (currentTab === 'Event Groups') {
+        htmx.process(htmx.find('#event-groups-tab'))
+    } else if (currentTab === 'Themes') {
+        htmx.process(htmx.find('#themes-tab'))
+    } else if (currentTab === 'New Theme') {
+        htmx.process(htmx.find('#theme-tab'))
+    }
+})">
+    {% include 'mnts/new-event.html' %}         
+    {% include 'mnts/event-groups.html' %}
+    {% include 'mnts/themes.html' %}
+    {% include 'mnts/new-theme.html' %}
+</div>
