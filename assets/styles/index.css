@@ -22,6 +22,28 @@ tr.htmx-swapping td, tr.htmx-swapping th {
     transition: opacity 400ms ease-out;
   }
 
-[x-cloak] {
-    display: none !important;
-  }
+a.fc-col-header-cell-cushion {
+    color: rgb(90, 90, 90);
+    text-decoration: none;
+}
+
+:root {
+    --fc-button-bg-color: rgb(68,59,154);
+    --fc-button-active-bg-color: rgb(46,38,124);
+    --fc-button-border-color: rgb(68,59,154);
+    --fc-button-active-border-color: rgb(68,59,154);
+    --fc-button-hover-bg-color: rgb(105,99,163);
+    --fc-button-hover-border-color: rgb(105,99,163);
+}
+
+@media (max-width: 610px) {
+    .fc .fc-toolbar {
+        display: grid;
+        justify-content: space-between;
+        justify-items: center;
+        justify-content: center;
+    }
+    .fc-toolbar-chunk {
+        padding: 4px;
+    }
+}

@@ -78,9 +78,9 @@ var calendar = new Calendar(calendarEl, {
     plugins: [dayGridPlugin,timeGridPlugin,listPlugin],
     initialView: 'timeGridWeek',
     headerToolbar: {
-    left: 'prev,today,next',
-    center: 'title',
-    right: 'dayGridMonth,timeGridWeek,listWeek'
+        left: 'dayGridMonth,timeGridWeek,listWeek',
+        center: 'title',
+        right: 'prev,today,next'
     },
     events: datesUrl,
     eventClick: function(info) {
