@@ -1,5 +1,4 @@
 import Alpine from 'alpinejs'
-import morph from '@alpinejs/morph'
 import { Calendar } from '@fullcalendar/core'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'

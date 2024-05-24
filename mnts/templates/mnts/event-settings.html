@@ -1,6 +1,5 @@
 <div id="settings-content" 
 x-init="$watch('currentTab', new_value => {
-    console.log('kdkdk')
     if (currentTab === 'Event') {
         htmx.process(htmx.find('#event-tab'))
     } else if (currentTab === 'Event Groups') {

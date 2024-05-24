@@ -9,14 +9,14 @@
         {{theme.text_color}} <div class="circle" style="background-color: {{theme.text_color}};"></div>
     </td>
     <td x-show="showForm == false" id="update-theme" class="px-3 py-4 table-cell">
-        <a @click="showForm = true" hx-swap="innerHTML" hx-target="closest tr"  class="flex justify-center cursor-pointer">
+        <a @click="showForm = true" hx-swap="innerHTML" hx-target="closest tr" class="flex justify-center cursor-pointer">
             <svg width="12" height="12" viewBox="0 0 24 24">
                 <path d="M7.127 22.562l-7.127 1.438 1.438-7.128 5.689 5.69zm1.414-1.414l11.228-11.225-5.69-5.692-11.227 11.227 5.689 5.69zm9.768-21.148l-2.816 2.817 5.691 5.691 2.816-2.819-5.691-5.689z"/>
             </svg>
         </a>
     </td>
     <td x-show="showForm == false" id="delete-theme" class="px-3 py-4 table-cell">
-        <a @click="showRow = false" hx-delete="{% url 'theme' id=theme.id %}" hx-swap="outerHTML swap:400ms" hx-target="#settings-content" hx-select="#settings-content" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-confirm="Are you sure you wish to delete the theme. If it has events, they will be deleted as well?" class="flex justify-center cursor-pointer">
+        <a x-on:htmx:before-request="showRow = false" hx-delete="{% url 'theme' id=theme.id %}" hx-swap="outerHTML swap:400ms" hx-target="#settings-content" hx-select="#settings-content" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-confirm="Are you sure you wish to delete the theme. If it has events, they will be deleted as well?" class="flex justify-center cursor-pointer">
             <svg width="12" height="12" viewBox="0 0 24 24"><path d="M20.197 2.837l.867.867-8.21 8.291 8.308 8.202-.866.867-8.292-8.21-8.23 8.311-.84-.84 8.213-8.32-8.312-8.231.84-.84 8.319 8.212 8.203-8.309zm-.009-2.837l-8.212 8.318-8.31-8.204-3.666 3.667 8.321 8.24-8.207 8.313 3.667 3.666 8.237-8.318 8.285 8.204 3.697-3.698-8.315-8.209 8.201-8.282-3.698-3.697z"/></svg>
         </a>
     </td>
